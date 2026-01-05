@@ -1,0 +1,141 @@
+PHP Project
+
+Query:
+
+CREATE DATABASE college_management_system;
+USE college_management_system;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin','faculty','student') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_name VARCHAR(100) NOT NULL,
+    duration INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    roll_number VARCHAR(50) UNIQUE NOT NULL,
+    course_id INT NOT NULL,
+    semester VARCHAR(10),
+    phone VARCHAR(20),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE faculty (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(100),
+    phone VARCHAR(20),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE subjects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    subject_name VARCHAR(100) NOT NULL,
+    course_id INT NOT NULL,
+    semester VARCHAR(10),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE faculty_subject (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    faculty_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (faculty_id) REFERENCES faculty(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+);
+
+CREATE TABLE enrollments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+);
+
+CREATE TABLE attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    subject_id INT NOT NULL,
+    course_id INT NOT NULL,
+    semester VARCHAR(10),
+    date DATE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE attendance_details (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    attendance_id INT NOT NULL,
+    student_id INT NOT NULL,
+    status ENUM('present','absent') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (attendance_id) REFERENCES attendance(id),
+    FOREIGN KEY (student_id) REFERENCES students(id)
+);
+
+CREATE TABLE exams (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    exam_name VARCHAR(100) NOT NULL,
+    course_id INT NOT NULL,
+    semester VARCHAR(10),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE marks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    exam_id INT NOT NULL,
+    student_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    marks INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (exam_id) REFERENCES exams(id),
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+);
+
+CREATE TABLE fees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT NOT NULL,
+    semester VARCHAR(10),
+    amount DECIMAL(10,2) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    fee_id INT NOT NULL,
+    status ENUM('paid','pending') NOT NULL,
+    payment_date DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (fee_id) REFERENCES fees(id)
+);
+
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
