@@ -1,8 +1,10 @@
 <?php
-$server = 'localhost';
-$username = 'root';
-$password = 'bishwas@1231990';
-$database = 'college_management_system';
+$env = require __DIR__ . '/env.php';
+
+$server = $env['db_host'];
+$username = $env['db_user'];
+$password = $env['db_pass'];
+$database = $env['db_name'];
 
 if (!function_exists('cms_get_connection')) {
   function cms_get_connection(): mysqli
